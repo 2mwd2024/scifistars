@@ -1,43 +1,4 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
@@ -102,6 +63,7 @@
             margin: 15px 0;
             padding: 20px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             transition: transform 0.3s ease-in-out, box-shadow 0.3s;
         }
@@ -111,22 +73,9 @@
             box-shadow: 0 0 12px #00BFFF;
         }
 
-        .character img {
-            width: 160px;
-            height: 200px;
-            border-radius: 10px;
-            margin-right: 25px;
-            border: 1px solid #00BFFF;
-            transition: border-color 0.3s;
-            object-fit: cover;
-        }
-
-        .character img:hover {
-            border-color: #00FFFF;
-        }
-
         .character-info {
             flex: 1;
+            text-align: center;
         }
 
         .character-info h3 {
@@ -239,12 +188,6 @@
                 text-align: center;
             }
 
-            .character img {
-                margin: 0 0 20px 0;
-                width: 130px;
-                height: 162px;
-            }
-
             h1 {
                 font-size: 2.2em;
             }
@@ -265,7 +208,6 @@
     <h2>Gezochte Acteurs</h2>
     <div class="character-list">
         <div class="character">
-            <img src="/images/lacey.png" alt="Lacey Chu uit Jinxed" style="width: 160px; height: auto;">
             <div class="character-info">
                 <h3>Lacey Chu</h3>
                 <p>Een jonge meid met een rond gezicht, heldere bruine ogen en lichte huid, vaak gezien met haar zwarte kat-baku. Ze is de inventieve hoofdpersoon die strijdt in baku-gevechten.</p>
@@ -273,7 +215,6 @@
             </div>
         </div>
         <div class="character">
-            <img src="/images/tobias.png" alt="Tobias Washington uit Jinxed" style="width: 160px; height: auto;">
             <div class="character-info">
                 <h3>Tobias Washington</h3>
                 <p>Een zelfverzekerde jongen met een scherp gezicht, donkere ogen en medium-bruine huid, met vleugelachtige accessoires. Hij is de kalme kapitein van een baku-gevechtsteam.</p>
